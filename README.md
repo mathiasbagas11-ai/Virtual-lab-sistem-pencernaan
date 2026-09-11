@@ -14,12 +14,18 @@ Setelah GitHub Pages aktif (lihat di bawah), lab bisa dibuka di:
 https://mathiasbagas11-ai.github.io/Virtual-lab-sistem-pencernaan/
 ```
 
-## 🚀 Mengaktifkan GitHub Pages (sekali saja)
+## 🚀 Deploy
 
-1. Buka **Settings → Pages** di repo ini.
-2. Bagian **Build and deployment → Source**, pilih **GitHub Actions**.
-3. Selesai. Tiap push ke `main` otomatis ter-deploy lewat
-   `.github/workflows/deploy-pages.yml`.
+Tiap push ke `main` otomatis ter-deploy lewat
+`.github/workflows/deploy-pages.yml`. Alur kerja itu memakai
+`actions/configure-pages` dengan `enablement: true`, jadi Pages dinyalakan
+sendiri lewat API pada kali pertama alur kerja berjalan — tidak ada
+langkah manual yang wajib.
+
+Kalau alur kerja tetap gagal di langkah `configure-pages` (misalnya
+organisasi membatasi Pages), nyalakan manual: **Settings → Pages → Build
+and deployment → Source: GitHub Actions**, lalu jalankan ulang alur kerja
+yang gagal dari tab **Actions**.
 
 > Alternatif tanpa Actions: pilih **Deploy from a branch** → `main` → `/ (root)`.
 > Berkas `.nojekyll` sudah ada supaya Jekyll tidak mengubah struktur file.
