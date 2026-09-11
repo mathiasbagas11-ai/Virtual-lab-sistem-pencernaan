@@ -6,6 +6,31 @@ Media pembelajaran interaktif sistem pencernaan manusia untuk IPA Kelas 8
 Isi lab: peta organ, perjalanan bolus, uji makanan, tabel pengamatan
 (salin / unduh CSV), mode tebak, dan kuis 10 soal acak.
 
+## 🎮 Yang bikin siswa betah
+
+Lab ini dirancang seperti permainan bertahap, bukan halaman bacaan:
+
+| Fitur | Kegunaan di kelas |
+| --- | --- |
+| **5 misi + lencana** | Progres tiap siswa tampil di header (bar XP + 5 lencana). Lencana terbuka saat membuka 8 kartu organ, menuntaskan perjalanan bolus, mendapat 4 hasil uji positif, mencatat 5 baris data, dan meraih skor kuis ≥ 80%. |
+| **Jalur organ interaktif** | Perjalanan bolus punya *stepper* organ yang bisa diklik untuk lompat ke organ mana pun. |
+| **Tabung uji beranimasi** | Tabung bergetar, muncul gelembung, warna berubah, lalu cap **POSITIF / NEGATIF** — plus daftar kombinasi reagen yang belum ditemukan. |
+| **Umpan balik kuis** | Opsi benar memantul, opsi salah bergetar, ada penghitung *streak* 🔥, cincin skor, dan confetti saat skor ≥ 80%. |
+| **Game sortir tanpa bocoran** | Jawaban baru diwarnai benar/salah setelah tombol **Periksa Jawaban** ditekan, jadi siswa tidak bisa coba-coba. |
+| **Efek suara** | Bunyi klik/benar/salah dibangkitkan WebAudio (tanpa file audio), bisa dimatikan lewat tombol 🔇. |
+| **Tema gelap** | Ikut setelan perangkat, bisa dikunci manual lewat tombol 🌙 / ☀️. |
+| **Progres tersimpan** | Tabel pengamatan, lencana, dan organ yang sudah dibuka disimpan di `localStorage`, jadi tidak hilang saat halaman ter-refresh. |
+| **Pintasan keyboard** | `1`–`5` lompat antar stasiun, `←` / `→` maju-mundur di perjalanan bolus, `Esc` menutup jendela. |
+| **Klik gambar = perbesar** | Gambar di Galeri Proses bisa dibuka layar penuh (lightbox), berguna saat ditayangkan lewat proyektor. |
+
+Semuanya tetap dalam **satu berkas HTML**, tanpa build step dan tanpa
+dependency JavaScript. Satu-satunya sumber eksternal adalah Google Fonts
+(Baloo 2, Plus Jakarta Sans, DM Mono); kalau jaringan sekolah memblokirnya,
+lab otomatis jatuh ke font sistem dan semua fitur tetap jalan.
+
+Animasi otomatis dimatikan untuk pengguna yang mengaktifkan
+`prefers-reduced-motion` di perangkatnya.
+
 ## 🔗 Link lab
 
 Setelah GitHub Pages aktif (lihat di bawah), lab bisa dibuka di:
@@ -61,7 +86,7 @@ Atribut yang penting:
 | Atribut | Gunanya |
 | --- | --- |
 | `allow="fullscreen"` | tombol ⛶ Fullscreen berfungsi penuh |
-| `allow="clipboard-write"` | tombol 📋 Salin Tabel berfungsi |
+| `allow="clipboard-write"` | tombol 📋 Salin tabel berfungsi |
 | `allowfullscreen` | kompatibilitas browser lama |
 
 Kalau atribut ini tidak dipasang (atau platform-nya melarang), lab tetap
@@ -101,8 +126,8 @@ Kalau platform memaksa atribut `sandbox`, minimal sertakan:
 sandbox="allow-scripts allow-same-origin allow-popups allow-downloads allow-modals"
 ```
 
-Tanpa `allow-downloads`, tombol ⬇️ Unduh CSV diblokir browser — pakai
-📋 Salin Tabel lalu tempel ke Google Sheets / Excel sebagai gantinya.
+Tanpa `allow-downloads`, tombol 💾 Unduh CSV diblokir browser — pakai
+📋 Salin tabel lalu tempel ke Google Sheets / Excel sebagai gantinya.
 
 ## 💻 Menjalankan secara lokal
 
@@ -124,8 +149,8 @@ g-*.webp                          # ilustrasi per stasiun
 ```
 
 Nama berkas gambar dirujuk dari `ALL_BASES` di dalam `index.html` **tanpa
-ekstensi**. Tombol **🔍 Cek Gambar** di header menguji semua gambar satu
-per satu dan melaporkan mana yang tidak ketemu.
+ekstensi**. Tombol **🔍** di header menguji semua gambar satu per satu dan
+melaporkan mana yang tidak ketemu.
 
 ## 🖼️ Catatan format gambar
 
