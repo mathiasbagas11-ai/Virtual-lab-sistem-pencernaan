@@ -22,7 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # enablement: true membuat Pages diaktifkan otomatis lewat API saat
+      # alur kerja pertama kali berjalan. Tanpa ini, langkah tersebut hanya
+      # membaca konfigurasi Pages dan gagal dengan "Get Pages site failed"
+      # selama Pages belum dinyalakan manual di Settings.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
