@@ -235,6 +235,10 @@
     .hud { grid-template-columns: 1fr; }
     .hud-tools { justify-content: flex-start; }
   }
+  @media (max-width: 560px) {
+    .hud { padding: 12px; }
+    .tool-btn .tool-txt { display: none; }
+  }
 
   /* ================= NAV STASIUN (stepper) ================= */
   nav.stations {
@@ -426,63 +430,108 @@
     border-color: var(--tangerine-deep); background: var(--tangerine); transform: scale(1.14);
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--tangerine) 25%, transparent);
   }
-  .track-label { font-size: .68rem; font-weight: 800; letter-spacing: .02em; text-align: center; line-height: 1.2; }
+  .track-label {
+    font-size: .66rem; font-weight: 800; letter-spacing: .02em; text-align: center;
+    line-height: 1.25; min-height: 2.5em;
+  }
+  .track-label em { display: block; font-style: normal; font-weight: 600; font-size: .92em; opacity: .72; }
 
   .journey-container {
     background: linear-gradient(178deg, var(--tangerine-wash), var(--surface-2));
     border: 2px solid var(--line);
-    border-radius: var(--r-md); padding: 16px; position: relative;
+    border-radius: var(--r-md); padding: 12px; position: relative;
   }
-  .journey-layout { display: grid; grid-template-columns: 1.05fr .95fr; gap: 14px; align-items: start; }
+  .journey-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
   @media (max-width: 1000px) { .journey-layout { grid-template-columns: 1fr; } }
-  .journey-left { display: flex; flex-direction: column; gap: 10px; }
-  .stage-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--tangerine-deep);
-  }
-  .stage-head .stage-count { font-family: var(--f-mono); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+  .journey-left { display: flex; flex-direction: column; gap: 12px; }
 
-  .organ-visual { font-size: 3.6rem; text-align: center; animation: bounce 2s ease-in-out infinite; line-height: 1.1; }
-  @keyframes bounce { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
-
-  .bolus-display {
-    background: var(--surface); border: 2px solid var(--line); border-radius: var(--r-md);
-    padding: 12px; text-align: center;
+  /* Kolom kiri = satu "berkas organ", bukan tumpukan kartu.
+     Hanya wadah luar yang berupa kartu; isinya dipisah garis rambut. */
+  .stage-card {
+    background: var(--surface); border: 2px solid var(--line);
+    border-radius: var(--r-md); padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 12px;
   }
-  .bolus-label { font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
-  .bolus-emoji { font-size: 2.4rem; margin: 6px 0; display: block; animation: wobble 3s ease-in-out infinite; }
+  .stage-top { display: flex; align-items: center; gap: 12px; }
+  .stage-organ-emoji {
+    width: 52px; height: 52px; flex: none; display: grid; place-items: center; font-size: 1.9rem;
+    background: var(--tangerine-wash); border-radius: 16px;
+    animation: bounce 2.6s ease-in-out infinite;
+  }
+  @keyframes bounce { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+  .stage-heading { flex: 1; min-width: 0; }
+  .stage-eyebrow {
+    font-size: .64rem; font-weight: 800; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-faint); display: block;
+  }
+  .stage-name { font-size: 1.25rem; color: var(--tangerine-deep); line-height: 1.15; }
+  .stage-count {
+    font-family: var(--f-mono); font-size: .82rem; font-variant-numeric: tabular-nums;
+    color: var(--tangerine-deep); background: var(--tangerine-wash);
+    padding: 4px 10px; border-radius: var(--r-pill); flex: none;
+  }
+
+  /* Kondisi bolus = satu-satunya hal yang berubah tiap organ, jadi
+     dia yang dapat sorotan warna; fakta lain tampil polos. */
+  .bolus-strip {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--tangerine-wash); border-radius: var(--r-md); padding: 10px 13px;
+  }
+  .bolus-emoji { font-size: 1.9rem; flex: none; line-height: 1; animation: wobble 3s ease-in-out infinite; }
   @keyframes wobble { 0%,100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.06); } }
+  .bolus-label {
+    font-size: .64rem; font-weight: 800; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--tangerine-deep); display: block;
+  }
+  .bolus-strip p { font-size: .92rem; line-height: 1.4; }
 
-  .fact-card { background: var(--surface); border: 2px solid var(--line); border-radius: var(--r-md); padding: 12px 14px; font-size: .93rem; }
-  .fact-card .fact-title { font-family: var(--f-display); font-weight: 700; font-size: .95rem; display: block; margin-bottom: 3px; }
-  .fact-card.proses { border-left: 6px solid var(--tangerine); }
-  .fact-card.proses .fact-title { color: var(--tangerine-deep); }
-  .fact-card.enzimm { border-left: 6px solid var(--grape); }
-  .fact-card.enzimm .fact-title { color: var(--grape-deep); }
-  .fact-card.hasil { border-left: 6px solid var(--lime); }
-  .fact-card.hasil .fact-title { color: var(--lime-deep); }
+  .fact-list { display: flex; flex-direction: column; }
+  .fact-row {
+    display: grid; grid-template-columns: 112px 1fr; gap: 14px;
+    padding: 10px 0; border-top: 1px solid var(--line-soft); font-size: .92rem; line-height: 1.5;
+  }
+  .fact-row:first-child { border-top: none; padding-top: 2px; }
+  .fact-row dt { font-weight: 800; font-size: .8rem; line-height: 1.35; padding-top: 2px; }
+  .fact-row.proses dt { color: var(--tangerine-deep); }
+  .fact-row.enzim dt  { color: var(--grape-deep); }
+  .fact-row.hasil dt  { color: var(--lime-deep); }
+  @media (max-width: 560px) {
+    .fact-row { grid-template-columns: 1fr; gap: 3px; }
+  }
 
+  /* Galeri: 2-3 gambar tidak butuh kolom bergulir sendiri — cukup tab,
+     supaya tinggi kolom kanan sama dengan kolom kiri dan tidak ada
+     scrollbar di dalam scrollbar. */
   .proc-gallery {
     background: var(--surface); border: 2px solid var(--line); border-radius: var(--r-md);
-    padding: 12px; display: flex; flex-direction: column; gap: 10px;
-    max-height: 680px; overflow-y: auto;
+    padding: 12px; display: flex; flex-direction: column; gap: 10px; align-self: start;
   }
+  .gallery-head { display: flex; flex-direction: column; gap: 8px; }
   .gallery-title {
-    font-family: var(--f-display); font-weight: 700; color: var(--tangerine-deep);
-    text-align: center; font-size: .98rem; position: sticky; top: -12px; z-index: 2;
-    background: var(--surface); padding: 6px 0; border-bottom: 2px solid var(--line-soft);
+    font-size: .64rem; font-weight: 800; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-faint);
   }
-  .proc-card { background: var(--surface-2); border: 2px solid var(--line); border-radius: var(--r-md); padding: 10px; transition: transform .2s; }
-  .proc-card:hover { transform: translateY(-2px); }
-  .proc-label { font-weight: 800; color: var(--tangerine-deep); font-size: .85rem; margin-bottom: 6px; }
+  .gallery-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gtab {
+    background: var(--surface-2); border: 2px solid var(--line); color: var(--ink);
+    padding: 6px 12px; border-radius: var(--r-pill); cursor: pointer;
+    font-size: .8rem; font-weight: 700; font-family: var(--f-body);
+    transition: transform .15s, background .15s, border-color .15s;
+  }
+  .gtab:hover { border-color: var(--tangerine); transform: translateY(-1px); }
+  .gtab.active { background: var(--tangerine); border-color: var(--tangerine-deep); color: #fff; }
+  :root[data-theme="dark"] .gtab.active, :root:not([data-theme="light"]) .gtab.active { color: #1B1020; }
+
+  .proc-card { display: flex; flex-direction: column; gap: 7px; animation: infoPop .3s; }
+  .proc-label { font-weight: 800; color: var(--tangerine-deep); font-size: .88rem; }
   .proc-card img {
-    width: 100%; max-width: 100%; max-height: 260px; object-fit: contain;
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); cursor: zoom-in;
+    width: 100%; max-width: 100%; max-height: min(44vh, 330px); object-fit: contain;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm); cursor: zoom-in;
   }
-  .proc-cap { font-size: .82rem; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+  .proc-cap { font-size: .84rem; color: var(--ink-soft); line-height: 1.5; }
   .proc-placeholder {
-    border: 2px dashed var(--line); border-radius: var(--r-sm); padding: 14px; text-align: center;
-    color: var(--ink-soft); font-size: .86rem; background: var(--surface); line-height: 1.5;
+    border: 2px dashed var(--line); border-radius: var(--r-sm); padding: 16px; text-align: center;
+    color: var(--ink-soft); font-size: .87rem; background: var(--surface-2); line-height: 1.55;
   }
   .proc-placeholder code { background: var(--tangerine-wash); padding: 1px 5px; border-radius: 4px; }
 
@@ -1838,16 +1887,43 @@ function renderJourneyTrack() {
     const kelas = i < currentJourneyStage ? 'done' : (i === currentJourneyStage ? 'current' : '');
     return `<button class="track-node ${kelas}" onclick="gotoStage(${i})" aria-current="${i === currentJourneyStage ? 'step' : 'false'}" aria-label="Organ ${i + 1}: ${s.organ}">
       <span class="track-dot" aria-hidden="true">${s.emoji}</span>
-      <span class="track-label">${s.organ}</span>
+      <span class="track-label">${pisahNama(s.organ)}</span>
     </button>`;
   }).join('');
   const aktif = track.querySelector('.track-node.current');
   if (aktif) aktif.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
+/* Nama organ seperti "Usus Halus (Duodenum)" dipecah supaya keterangan
+   dalam kurung turun ke baris kedua dengan bobot lebih ringan. */
+function pisahNama(nama) {
+  const m = nama.match(/^(.*?)\s*\((.*)\)\s*$/);
+  return m ? m[1] + '<em>' + m[2] + '</em>' : nama;
+}
+/* Label galeri berpola "emoji Jenis: keterangan" — bagian sebelum titik
+   dua cukup pendek untuk dipakai sebagai teks tab. */
+function labelTab(label) { return label.split(':')[0].trim(); }
+
+let currentProc = 0;
+function showProc(i) {
+  const stage = journeyStages[currentJourneyStage];
+  if (!stage.gallery[i]) return;
+  currentProc = i;
+  const panel = document.getElementById('procPanel');
+  panel.innerHTML = procCardHTML(stage.gallery[i]);
+  panel.querySelectorAll('img[data-base]').forEach(attachSmartImg);
+  document.querySelectorAll('.gtab').forEach((t, idx) => {
+    t.classList.toggle('active', idx === i);
+    t.setAttribute('aria-selected', idx === i ? 'true' : 'false');
+  });
+  sfx('klik');
+}
 function renderJourneyStage() {
   const stage = journeyStages[currentJourneyStage];
   const container = document.getElementById('journeyStages');
-  const galleryHTML = stage.gallery.map(procCardHTML).join('');
+  currentProc = 0;
+  const tabsHTML = stage.gallery.map((c, i) =>
+    `<button class="gtab ${i === 0 ? 'active' : ''}" role="tab" aria-selected="${i === 0}" onclick="showProc(${i})">${labelTab(c.label)}</button>`
+  ).join('');
   const tebakBox = `<div class="tebak-box ${modeTebak ? 'hidden-answer' : 'revealed'}" onclick="${modeTebak ? 'revealTebak(this)' : ''}">
     <span class="tebak-q">🎯 ${stage.tebakPertanyaan}</span>
     <span class="tebak-a">${stage.tebakJawaban}</span>
@@ -1856,26 +1932,35 @@ function renderJourneyStage() {
   container.innerHTML = `
     <div class="journey-layout">
       <div class="journey-left">
-        <div class="stage-head">
-          <span>Organ ${currentJourneyStage + 1}: ${stage.organ}</span>
+      <div class="stage-card">
+        <div class="stage-top">
+          <span class="stage-organ-emoji" aria-hidden="true">${stage.emoji}</span>
+          <div class="stage-heading">
+            <span class="stage-eyebrow">Organ ke-${currentJourneyStage + 1}</span>
+            <h3 class="stage-name">${stage.organ}</h3>
+          </div>
           <span class="stage-count">${currentJourneyStage + 1}/${journeyStages.length}</span>
         </div>
-        <div class="organ-visual" aria-hidden="true">${stage.emoji}</div>
-        <div class="bolus-display">
-          <span class="bolus-label">Kondisi bolus di sini</span>
+        <div class="bolus-strip">
           <span class="bolus-emoji" aria-hidden="true">${stage.bolusEmoji}</span>
-          <div>${stage.bolusDesc}</div>
+          <div><span class="bolus-label">Kondisi bolus</span><p>${stage.bolusDesc}</p></div>
         </div>
-        <div class="fact-card proses"><span class="fact-title">🔬 Proses yang terjadi</span>${stage.proses}</div>
-        <div class="fact-card enzimm"><span class="fact-title">🧪 Enzim yang bekerja</span>${stage.enzim}</div>
-        <div class="fact-card hasil"><span class="fact-title">✨ Hasil</span>${stage.hasil}</div>
+        <dl class="fact-list">
+          <div class="fact-row proses"><dt>🔬 Proses</dt><dd>${stage.proses}</dd></div>
+          <div class="fact-row enzim"><dt>🧪 Enzim</dt><dd>${stage.enzim}</dd></div>
+          <div class="fact-row hasil"><dt>✨ Hasil</dt><dd>${stage.hasil}</dd></div>
+        </dl>
+      </div>
+      ${tebakBox}
       </div>
       <div class="proc-gallery">
-        <div class="gallery-title">🖼️ Galeri Proses Organ Ini</div>
-        ${galleryHTML}
+        <div class="gallery-head">
+          <span class="gallery-title">Galeri proses</span>
+          <div class="gallery-tabs" role="tablist" aria-label="Jenis proses">${tabsHTML}</div>
+        </div>
+        <div class="proc-panel" id="procPanel">${procCardHTML(stage.gallery[0])}</div>
       </div>
     </div>
-    ${tebakBox}
   `;
   container.querySelectorAll('img[data-base]').forEach(attachSmartImg);
   renderJourneyTrack();
