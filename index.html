@@ -3,15 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Virtual Lab Sistem Pencernaan Manusia - media pembelajaran interaktif IPA Kelas 8. Peta organ, perjalanan bolus, uji makanan, dan kuis.">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Virtual Lab Sistem Pencernaan | IPA Kelas 8">
+<meta property="og:description" content="Media pembelajaran interaktif sistem pencernaan manusia: peta organ, perjalanan bolus, uji makanan, dan kuis.">
+<meta property="og:image" content="pencernaan.png">
+<meta name="twitter:card" content="summary_large_image">
 <title>Lab Sistem Pencernaan | IPA Kelas 8</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    min-height: 100vh;
+    min-height: 100%;
     color: #3e2723;
     padding: 10px;
+    overflow-x: hidden;
   }
+  /* Saat di-embed lewat <iframe> di website lain: rapatkan padding,
+     hilangkan 100vh supaya tinggi ikut konten (tidak double-scroll). */
+  body.embedded { padding: 6px; }
+  body.embedded header { border-radius: 10px; padding: 12px 16px; }
+  body.embedded header h1 { font-size: 1.35em; }
+  /* Mode "fullscreen palsu" untuk iframe yang tidak diizinkan Fullscreen API */
+  body.pseudo-fullscreen {
+    position: fixed; inset: 0; z-index: 9998;
+    overflow-y: auto; padding: 8px;
+  }
+  /* Toast pengganti alert() — alert diblokir di iframe ber-sandbox */
+  #toastWrap {
+    position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+    z-index: 10000; display: flex; flex-direction: column; gap: 8px;
+    align-items: center; pointer-events: none; width: calc(100% - 24px);
+    max-width: 420px;
+  }
+  .toast {
+    background: #3e2723; color: #fff; padding: 11px 16px; border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.28); font-size: 0.92em; line-height: 1.4;
+    text-align: center; animation: toastIn 0.18s ease-out; word-break: break-word;
+  }
+  .toast.warn { background: #bf360c; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   .container { max-width: 1400px; margin: 0 auto; }
   
   header {
@@ -482,6 +515,7 @@
 </style>
 </head>
 <body>
+<div id="toastWrap" aria-live="polite"></div>
 <div class="container">
 
   <header>
@@ -697,6 +731,60 @@
 </div>
 
 <script>
+/* ============ DUKUNGAN EMBED (iframe di website lain) ============
+   File ini dirancang supaya tetap berfungsi penuh saat ditempel lewat
+   <iframe> di Google Sites, Moodle, Blogger, Notion, WordPress, dll.
+   Yang ditangani di sini: deteksi iframe, toast pengganti alert/confirm,
+   dan auto-resize tinggi iframe lewat postMessage. */
+var IN_IFRAME = (function () {
+  try { return window.self !== window.top; } catch (e) { return true; }
+})();
+
+function toast(msg, warn) {
+  var wrap = document.getElementById('toastWrap');
+  if (!wrap) { try { alert(msg); } catch (e) {} return; }
+  var el = document.createElement('div');
+  el.className = 'toast' + (warn ? ' warn' : '');
+  el.textContent = String(msg).replace(/<[^>]*>/g, '');
+  wrap.appendChild(el);
+  setTimeout(function () {
+    el.style.transition = 'opacity .25s'; el.style.opacity = '0';
+    setTimeout(function () { el.remove(); }, 260);
+  }, warn ? 4200 : 2600);
+}
+
+/* confirm() bisa diblokir di iframe ber-sandbox (mengembalikan undefined).
+   Kalau diblokir, jangan batalkan aksi secara diam-diam. */
+function safeConfirm(msg) {
+  try {
+    var r = window.confirm(msg);
+    return typeof r === 'boolean' ? r : true;
+  } catch (e) { return true; }
+}
+
+/* Kabari halaman induk tiap kali tinggi konten berubah, supaya iframe
+   bisa di-resize otomatis (lihat cuplikan embed di README). */
+function reportHeight() {
+  if (!IN_IFRAME) return;
+  var h = Math.max(
+    document.body.scrollHeight, document.documentElement.scrollHeight,
+    document.body.offsetHeight, document.documentElement.offsetHeight
+  );
+  try {
+    window.parent.postMessage({ type: 'lab-pencernaan:height', height: h }, '*');
+  } catch (e) {}
+}
+
+if (IN_IFRAME) {
+  document.body.classList.add('embedded');
+  if (window.ResizeObserver) {
+    new ResizeObserver(reportHeight).observe(document.body);
+  } else {
+    setInterval(reportHeight, 800);
+  }
+  window.addEventListener('load', reportHeight);
+  setTimeout(reportHeight, 300);
+}
 let modeTebak = false;
 let currentTab = 'peta';
 let tableData = [];
@@ -705,16 +793,17 @@ let currentJourneyStage = 0;
 // ============ PENCARI GAMBAR PINTAR ============
 function imgCandidates(base) {
   return [
-    'img/' + base + '.png', base + '.png',
-    '../img/' + base + '.png', '../' + base + '.png',
-    'img/' + base + '.webp', base + '.webp',
-    '../img/' + base + '.webp', '../' + base + '.webp',
-    'img/' + base + '.jpg', base + '.jpg',
-    '../img/' + base + '.jpg', '../' + base + '.jpg',
-    'img/' + base + '.jpeg', base + '.jpeg',
-    '../img/' + base + '.jpeg', '../' + base + '.jpeg',
-    'img/' + base + '.png.webp', base + '.png.webp',
-    'img/' + base + '.png.png', base + '.png.png'
+    // Gambar ada di folder yang sama dengan index.html, jadi coba itu dulu:
+    // kandidat lain hanya cadangan kalau struktur folder berubah.
+    base + '.png', base + '.webp', base + '.jpg', base + '.jpeg',
+    'img/' + base + '.png', 'img/' + base + '.webp',
+    'img/' + base + '.jpg', 'img/' + base + '.jpeg',
+    '../' + base + '.png', '../img/' + base + '.png',
+    '../' + base + '.webp', '../img/' + base + '.webp',
+    '../' + base + '.jpg', '../img/' + base + '.jpg',
+    '../' + base + '.jpeg', '../img/' + base + '.jpeg',
+    base + '.png.webp', base + '.png.png',
+    'img/' + base + '.png.webp', 'img/' + base + '.png.png'
   ];
 }
 
@@ -1032,10 +1121,36 @@ function closeModal(type) {
   if (type === 'panduan') document.getElementById('modalPanduan').classList.remove('active');
   if (type === 'cek') document.getElementById('modalCek').classList.remove('active');
 }
-function toggleFullscreen() {
-  if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); document.body.classList.add('fullscreen'); }
-  else { document.exitFullscreen(); document.body.classList.remove('fullscreen'); }
+/* Fullscreen API ditolak di iframe tanpa allow="fullscreen".
+   Kalau ditolak, pakai mode fullscreen palsu (position:fixed) supaya
+   tombolnya tetap berguna di website mana pun. */
+function pseudoFullscreen(on) {
+  document.body.classList.toggle('pseudo-fullscreen', on);
+  document.body.classList.toggle('fullscreen', on);
+  reportHeight();
 }
+function toggleFullscreen() {
+  var aktif = !!document.fullscreenElement || document.body.classList.contains('pseudo-fullscreen');
+  if (aktif) {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(function () {});
+    }
+    pseudoFullscreen(false);
+    document.body.classList.remove('fullscreen');
+    return;
+  }
+  var req = document.documentElement.requestFullscreen
+    ? document.documentElement.requestFullscreen()
+    : Promise.reject();
+  Promise.resolve(req)
+    .then(function () { document.body.classList.add('fullscreen'); })
+    .catch(function () { pseudoFullscreen(true); });
+}
+document.addEventListener('fullscreenchange', function () {
+  if (!document.fullscreenElement && !document.body.classList.contains('pseudo-fullscreen')) {
+    document.body.classList.remove('fullscreen');
+  }
+});
 function switchTab(tabId, btn) {
   document.querySelectorAll('.station').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1156,7 +1271,7 @@ function catatJourney() {
   const stage = journeyStages[currentJourneyStage];
   tableData.push({no:tableData.length+1, jenis:'Perjalanan Bolus', detail:`Organ: ${stage.organ}`, hasil:stage.hasil, kesimpulan:`Enzim: ${stage.enzim}`});
   renderTable();
-  alert('✅ Data perjalanan bolus dicatat ke tabel!');
+  toast('✅ Data perjalanan bolus dicatat ke tabel!');
 }
 
 // ============ UJI MAKANAN ============
@@ -1218,7 +1333,7 @@ function catatUji() {
   if (!lastUjiResult) return;
   tableData.push({no:tableData.length+1, jenis:'Uji Makanan', detail:`${lastUjiResult.sampel} + ${lastUjiResult.reagen}`, hasil:lastUjiResult.hasil, kesimpulan:lastUjiResult.kesimpulan});
   renderTable();
-  alert('✅ Hasil uji makanan dicatat ke tabel!');
+  toast('✅ Hasil uji makanan dicatat ke tabel!');
 }
 
 // ============ TABEL ============
@@ -1230,22 +1345,56 @@ function renderTable() {
   }
   tbody.innerHTML = tableData.map(d => `<tr><td>${d.no}</td><td>${d.jenis}</td><td>${d.detail}</td><td>${d.hasil}</td><td>${d.kesimpulan}</td></tr>`).join('');
 }
+/* navigator.clipboard butuh izin allow="clipboard-write" di iframe lintas
+   domain. Sediakan jalur cadangan execCommand('copy') supaya tetap jalan. */
+function salinTeks(text) {
+  var sukses = function () { toast('✅ Tabel berhasil disalin ke clipboard!'); };
+  var cadangan = function () {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    if (ok) sukses();
+    else toast('⚠️ Browser memblokir penyalinan otomatis. Buka lab di tab baru lalu salin ulang.', true);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(sukses).catch(cadangan);
+  } else {
+    cadangan();
+  }
+}
 function copyTable() {
-  if (tableData.length === 0) { alert('Tabel masih kosong!'); return; }
+  if (tableData.length === 0) { toast('Tabel masih kosong!', true); return; }
   let text = 'No\tJenis\tDetail\tHasil\tKesimpulan\n';
   tableData.forEach(d => { text += `${d.no}\t${d.jenis}\t${d.detail}\t${d.hasil}\t${d.kesimpulan}\n`; });
-  navigator.clipboard.writeText(text).then(() => alert('✅ Tabel berhasil disalin ke clipboard!'));
+  salinTeks(text);
 }
 function downloadCSV() {
-  if (tableData.length === 0) { alert('Tabel masih kosong!'); return; }
-  let csv = 'No,Jenis,Detail,Hasil,Kesimpulan\n';
+  if (tableData.length === 0) { toast('Tabel masih kosong!', true); return; }
+  let csv = '\uFEFFNo,Jenis,Detail,Hasil,Kesimpulan\n';
   tableData.forEach(d => { csv += `${d.no},"${d.jenis}","${d.detail}","${d.hasil}","${d.kesimpulan}"\n`; });
-  const blob = new Blob([csv], {type:'text/csv'});
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'lab-sistem-pencernaan.csv'; a.click();
+  a.href = url;
+  a.download = 'lab-sistem-pencernaan.csv';
+  a.rel = 'noopener';
+  /* Iframe ber-sandbox tanpa allow-downloads membatalkan unduhan tanpa error.
+     Di dalam iframe, arahkan ke tab baru supaya siswa tetap dapat filenya. */
+  if (IN_IFRAME) a.target = '_blank';
+  document.body.appendChild(a);
+  try { a.click(); } catch (e) {}
+  a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+  if (IN_IFRAME) toast('Kalau unduhan diblokir, pakai tombol 📋 Salin Tabel lalu tempel ke spreadsheet.');
 }
-function resetTable() { if (confirm('Yakin mau hapus semua data tabel?')) { tableData = []; renderTable(); } }
+function resetTable() { if (safeConfirm('Yakin mau hapus semua data tabel?')) { tableData = []; renderTable(); } }
 
 // ============ KUIS ============
 let quizState = {current:0, score:0, answered:false, questions:[]};
@@ -1344,7 +1493,7 @@ function handleCategoryClick(kategori) {
 function checkSortir() {
   const total = sortirState.items.length;
   const placed = Object.keys(sortirState.placed).length;
-  if (placed < total) { alert(`Masih ada ${total-placed} item yang belum dikelompokkan!`); return; }
+  if (placed < total) { toast(`Masih ada ${total-placed} item yang belum dikelompokkan!`, true); return; }
   let correct = 0;
   sortirState.items.forEach((item,i) => { if (sortirState.placed[i] === item.kategori) correct++; });
   const persen = Math.round((correct/total)*100);
