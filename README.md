@@ -14,21 +14,26 @@ Setelah GitHub Pages aktif (lihat di bawah), lab bisa dibuka di:
 https://mathiasbagas11-ai.github.io/Virtual-lab-sistem-pencernaan/
 ```
 
-## 🚀 Deploy
+## 🚀 Mengaktifkan GitHub Pages (wajib, sekali saja)
 
-Tiap push ke `main` otomatis ter-deploy lewat
-`.github/workflows/deploy-pages.yml`. Alur kerja itu memakai
-`actions/configure-pages` dengan `enablement: true`, jadi Pages dinyalakan
-sendiri lewat API pada kali pertama alur kerja berjalan — tidak ada
-langkah manual yang wajib.
+Langkah ini **harus dikerjakan manual** dan tidak bisa diotomatiskan:
+membuat Pages site lewat API memerlukan izin `administration: write`, dan
+`GITHUB_TOKEN` milik alur kerja tidak pernah mendapat izin itu. Selama
+Pages belum dinyalakan, alur kerja deploy akan gagal di langkah
+`configure-pages` dengan `Get Pages site failed ... Not Found`.
 
-Kalau alur kerja tetap gagal di langkah `configure-pages` (misalnya
-organisasi membatasi Pages), nyalakan manual: **Settings → Pages → Build
-and deployment → Source: GitHub Actions**, lalu jalankan ulang alur kerja
-yang gagal dari tab **Actions**.
+1. Buka **Settings → Pages** di repo ini.
+2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
+3. Buka tab **Actions**, pilih jalannya alur kerja yang gagal, lalu klik
+   **Re-run all jobs**.
 
-> Alternatif tanpa Actions: pilih **Deploy from a branch** → `main` → `/ (root)`.
-> Berkas `.nojekyll` sudah ada supaya Jekyll tidak mengubah struktur file.
+Setelah itu tiap push ke `main` ter-deploy otomatis lewat
+`.github/workflows/deploy-pages.yml`, tanpa langkah manual lagi.
+
+> Alternatif tanpa Actions: **Settings → Pages → Source: Deploy from a
+> branch** → `main` → `/ (root)`. Lebih sedikit bagian yang bergerak untuk
+> situs statis seperti ini, dan alur kerja di atas bisa dihapus. Berkas
+> `.nojekyll` sudah ada supaya Jekyll tidak mengubah struktur file.
 
 ## 📌 Cara menempel di website lain
 
