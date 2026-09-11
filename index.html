@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Virtual Lab Sistem Pencernaan | IPA Kelas 8">
 <meta property="og:description" content="Media pembelajaran interaktif sistem pencernaan manusia: peta organ, perjalanan bolus, uji makanan, dan kuis.">
-<meta property="og:image" content="pencernaan.png">
+<meta property="og:image" content="pencernaan.webp">
 <meta name="twitter:card" content="summary_large_image">
 <title>Lab Sistem Pencernaan | IPA Kelas 8</title>
 <style>
@@ -793,13 +793,14 @@ let currentJourneyStage = 0;
 // ============ PENCARI GAMBAR PINTAR ============
 function imgCandidates(base) {
   return [
-    // Gambar ada di folder yang sama dengan index.html, jadi coba itu dulu:
-    // kandidat lain hanya cadangan kalau struktur folder berubah.
-    base + '.png', base + '.webp', base + '.jpg', base + '.jpeg',
-    'img/' + base + '.png', 'img/' + base + '.webp',
+    // Gambar disimpan sebagai WebP di folder yang sama dengan index.html,
+    // jadi kandidat itu dicoba lebih dulu. Sisanya hanya cadangan kalau
+    // ada gambar tambahan berformat lain atau struktur folder berubah.
+    base + '.webp', base + '.png', base + '.jpg', base + '.jpeg',
+    'img/' + base + '.webp', 'img/' + base + '.png',
     'img/' + base + '.jpg', 'img/' + base + '.jpeg',
-    '../' + base + '.png', '../img/' + base + '.png',
     '../' + base + '.webp', '../img/' + base + '.webp',
+    '../' + base + '.png', '../img/' + base + '.png',
     '../' + base + '.jpg', '../img/' + base + '.jpg',
     '../' + base + '.jpeg', '../img/' + base + '.jpeg',
     base + '.png.webp', base + '.png.png',

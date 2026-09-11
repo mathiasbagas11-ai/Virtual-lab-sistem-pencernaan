@@ -106,12 +106,34 @@ python3 -m http.server 8000
 
 ```
 index.html                        # seluruh lab (HTML + CSS + JS)
-pencernaan.png                    # peta organ utama
-g-*.png                           # ilustrasi per stasiun
+pencernaan.webp                   # peta organ utama
+g-*.webp                          # ilustrasi per stasiun
 .nojekyll                         # matikan pemrosesan Jekyll di Pages
 .github/workflows/deploy-pages.yml
 ```
 
-Nama berkas gambar dirujuk dari `ALL_BASES` di dalam `index.html`. Tombol
-**🔍 Cek Gambar** di header menguji semua gambar satu per satu dan
-melaporkan mana yang tidak ketemu.
+Nama berkas gambar dirujuk dari `ALL_BASES` di dalam `index.html` **tanpa
+ekstensi**. Tombol **🔍 Cek Gambar** di header menguji semua gambar satu
+per satu dan melaporkan mana yang tidak ketemu.
+
+## 🖼️ Catatan format gambar
+
+Ilustrasi disimpan sebagai **WebP kualitas 90**, bukan PNG: total aset
+turun dari 21,8 MB menjadi 1,6 MB (hemat 92,8%) tanpa perbedaan yang
+terlihat pada teks label. Ini penting karena lab sering dibuka lewat WiFi
+sekolah dan di dalam iframe.
+
+WebP didukung semua browser modern (Chrome, Firefox, Safari 14+, Edge).
+Pemuat gambar di `index.html` tetap mencoba `.png`, `.jpg`, dan `.jpeg`
+sebagai cadangan, jadi menambah gambar berformat lain tetap bisa tanpa
+mengubah kode.
+
+Kalau ingin mengganti atau menambah ilustrasi, simpan sebagai WebP:
+
+```bash
+python3 -c "
+from PIL import Image
+im = Image.open('gambar-baru.png').convert('RGB')
+im.save('gambar-baru.webp', 'WEBP', quality=90, method=6)
+"
+```
