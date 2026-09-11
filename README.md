@@ -16,24 +16,25 @@ https://mathiasbagas11-ai.github.io/Virtual-lab-sistem-pencernaan/
 
 ## 🚀 Mengaktifkan GitHub Pages (wajib, sekali saja)
 
-Langkah ini **harus dikerjakan manual** dan tidak bisa diotomatiskan:
-membuat Pages site lewat API memerlukan izin `administration: write`, dan
-`GITHUB_TOKEN` milik alur kerja tidak pernah mendapat izin itu. Selama
-Pages belum dinyalakan, alur kerja deploy akan gagal di langkah
-`configure-pages` dengan `Get Pages site failed ... Not Found`.
+Lab ini tayang lewat **Deploy from a branch**: GitHub menyajikan langsung
+isi `main` tanpa alur kerja apa pun. Tidak ada langkah build karena lab
+hanya terdiri dari satu berkas HTML dan gambar.
+
+Langkah ini **harus dikerjakan manual sekali** dan tidak bisa
+diotomatiskan: membuat Pages site lewat API memerlukan izin
+`administration: write`, dan `GITHUB_TOKEN` milik alur kerja tidak pernah
+mendapat izin itu.
 
 1. Buka **Settings → Pages** di repo ini.
-2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
-3. Buka tab **Actions**, pilih jalannya alur kerja yang gagal, lalu klik
-   **Re-run all jobs**.
+2. Pada **Build and deployment → Source**, pilih **Deploy from a branch**.
+3. Di baris **Branch**, pilih `main` dan folder `/ (root)`, lalu **Save**.
 
-Setelah itu tiap push ke `main` ter-deploy otomatis lewat
-`.github/workflows/deploy-pages.yml`, tanpa langkah manual lagi.
+Tunggu sekitar satu menit, lalu buka
+`https://mathiasbagas11-ai.github.io/Virtual-lab-sistem-pencernaan/`.
 
-> Alternatif tanpa Actions: **Settings → Pages → Source: Deploy from a
-> branch** → `main` → `/ (root)`. Lebih sedikit bagian yang bergerak untuk
-> situs statis seperti ini, dan alur kerja di atas bisa dihapus. Berkas
-> `.nojekyll` sudah ada supaya Jekyll tidak mengubah struktur file.
+Setelah itu tiap push ke `main` tayang otomatis tanpa langkah tambahan.
+Berkas `.nojekyll` membuat GitHub menyajikan berkas apa adanya, tanpa
+diproses Jekyll.
 
 ## 📌 Cara menempel di website lain
 
@@ -120,7 +121,6 @@ index.html                        # seluruh lab (HTML + CSS + JS)
 pencernaan.webp                   # peta organ utama
 g-*.webp                          # ilustrasi per stasiun
 .nojekyll                         # matikan pemrosesan Jekyll di Pages
-.github/workflows/deploy-pages.yml
 ```
 
 Nama berkas gambar dirujuk dari `ALL_BASES` di dalam `index.html` **tanpa
